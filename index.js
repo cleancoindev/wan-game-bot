@@ -25,7 +25,7 @@ let lotterySC = new web3.eth.Contract(lotteryAbi, lotterySCAddr);
 
 
 main = async () => {
-  console.log('checking...');
+  console.log((new Date()).toString(), 'checking...');
 
   let awaitArray = [];
   awaitArray.push(lotterySC.methods.curUpDownRound().call());

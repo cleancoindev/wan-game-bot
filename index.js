@@ -1,11 +1,12 @@
 const Web3 = require('web3');
 const lotteryAbi = require("./lottery.json");
 const axios = require('axios');
+const sleep = require('ko-sleep');
 
-const lotterySCAddr = '0x349be04a0ad9b92486430869d1390afc85faf5ad';
+const lotterySCAddr = '0x1911f0083643f9e797b281c78499092934fef696';
 const _updownGameTime = 600;
-const _stopBetTime = 120;
-const _randomGameTime = 3600;
+const _stopBetTime = 60;
+const _randomGameTime = _updownGameTime*2;
 const _winnerCnt = 1;
 const rpcUrl = 'http://localhost:8888/';
 const owner = '0xbf12c73ccc1f7f670bf80d0bba93fe5765df9fec';
@@ -15,7 +16,7 @@ var options = {
   from: owner,
   to: lotterySCAddr,
   gasPrice: 180e9,
-  gas: 2000000
+  gas: 10000000
 }
 
 console.log('wan bet bot start:', lotterySCAddr);
@@ -35,8 +36,11 @@ main = async () => {
   awaitArray.push(lotterySC.methods.feeRatio().call());
   awaitArray.push(lotterySC.methods.upDownLtrstopTimeSpanInAdvance().call());
   awaitArray.push(lotterySC.methods.randomLotteryTimeCycle().call());
+  awaitArray.push(lotterySC.methods.chainEndTime().call());
 
-  const [
+
+
+  let [
     round,
     lotteryRound,
     gameStartTime,
@@ -44,6 +48,7 @@ main = async () => {
     feeRatio,
     stopBefore,
     randomTimeCycle,
+    chainEndTime,
   ] = await Promise.all(awaitArray);
 
   console.log('round:', round,
@@ -52,44 +57,68 @@ main = async () => {
     'updownTimeCycle:', updownTimeCycle,
     'feeRatio:', feeRatio,
     'stopBefore:', stopBefore,
-    'randomTimeCycle:', randomTimeCycle);
+    'randomTimeCycle:', randomTimeCycle,
+    'localTime:', (Date.now()/1000).toFixed(0),
+    'chainEndTime:', chainEndTime);
+
+  chainEndTime = Number(chainEndTime);
 
   let roundInfo = await lotterySC.methods.updownGameMap(round).call();
 
   console.log('roundInfo-> openPrice:', roundInfo.openPrice, 'closePrice:', roundInfo.closePrice,
     'upAmount:', Number(roundInfo.upAmount) / 1e18, 'downAmount:', Number(roundInfo.downAmount) / 1e18);
   
-  console.log('round time left:', Number(gameStartTime) + Number(updownTimeCycle) * (Number(round) + 1) - Date.now() / 1000, 's.');
-
+  console.log('round time left:', Number(gameStartTime) + Number(updownTimeCycle) * (Number(round) + 1) - chainEndTime, 's.');
+  let leftTime = Number(gameStartTime) + Number(updownTimeCycle) * (Number(round) + 1) - chainEndTime;
   if (round == 0 && roundInfo.openPrice == 0 && gameStartTime == 0) {
     console.log('SC init.');
     console.log('setFeeRatio...');
     await lotterySC.methods.setFeeRatio(_feeRatio).send(options);
-    console.log('setRandomWinerNumber...');
-    await lotterySC.methods.setRandomWinerNumber(_winnerCnt).send(options);
+    console.log('setRandomWinnerNumber...');
+    await lotterySC.methods.setRandomWinnerNumber(_winnerCnt).send(options);
     console.log('setUpDownLotteryTime...');
     const _gameStartTime = Number((Date.now() / 1000).toFixed(0));
     await lotterySC.methods.setUpDownLotteryTime(_gameStartTime, _updownGameTime, _stopBetTime).send(options);
     console.log('setRandomLotteryTime...');
     await lotterySC.methods.setRandomLotteryTime(_randomGameTime).send(options);
+    console.log('genRandom...');
+    await lotterySC.methods.genRandom(0).send(options);
+    await sleep(10000);
+  } else if (gameStartTime != 0 && roundInfo.openPrice == 0 && leftTime < updownTimeCycle && leftTime > 0) {
     let curPrice = await getPrice();
-    console.log('setPriceIndex...');
+    console.log('setPriceIndex...', curPrice);
     await lotterySC.methods.setPriceIndex(Number((curPrice * 1e8).toFixed(0)), 0, true).send(options);
     console.log('init finish.');
   } else if (gameStartTime != 0
     && roundInfo.openPrice != 0
     && roundInfo.closePrice == 0
-    && Date.now() / 1000 > Number(gameStartTime) + Number(updownTimeCycle) * (Number(round) + 1)) {
+    && chainEndTime > Number(gameStartTime) + Number(updownTimeCycle) * (Number(round) + 1)) {
     console.log('End time arrive.');
 
     let curPrice = await getPrice();
     console.log('setPriceIndex...');
     await lotterySC.methods.setPriceIndex(Number((curPrice * 1e8).toFixed(0)), Number(round), false).send(options);
+    await sleep(10000);
     console.log('upDownLotteryFanalize...');
     await lotterySC.methods.upDownLotteryFanalize().send(options);
     console.log('setPriceIndex...');
     await lotterySC.methods.setPriceIndex(Number((curPrice * 1e8).toFixed(0)), Number(round) + 1, true).send(options);
+    await sleep(10000);
+  } 
+  console.log('random end time:', (Number(gameStartTime) + Number(randomTimeCycle)*(Number(lotteryRound) + 1)));
+  if ((chainEndTime != 0) && (randomTimeCycle != 0) && (gameStartTime != 0) && (chainEndTime > (Number(gameStartTime) + Number(randomTimeCycle)*(Number(lotteryRound) + 1)))) {
+    let rd = await lotterySC.methods.randomGameMap(lotteryRound).call();
+    console.log('randomGameMap:', rd);
+    if (!rd.finished) {
+      console.log('genRandom...')
+      await lotterySC.methods.genRandom(lotteryRound).send(options);
+      await sleep(10000);
+      console.log('randomLotteryFanalize...')
+      await lotterySC.methods.randomLotteryFanalize().send(options);
+      await sleep(10000);
+    }
   }
+
   console.log('check ok!');
   setTimeout(main, 5000, null);
 }

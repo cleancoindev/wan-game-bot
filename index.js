@@ -3,7 +3,7 @@ const lotteryAbi = require("./lottery.json");
 const axios = require('axios');
 const sleep = require('ko-sleep');
 
-const lotterySCAddr = '0x1911f0083643f9e797b281c78499092934fef696';
+const lotterySCAddr = '0x0411d36b9b54890c5d697f33d76b31a4f7e83d95';
 const _updownGameTime = 600;
 const _stopBetTime = 60;
 const _randomGameTime = _updownGameTime*2;
@@ -76,11 +76,10 @@ main = async () => {
     await lotterySC.methods.setFeeRatio(_feeRatio).send(options);
     console.log('setRandomWinnerNumber...');
     await lotterySC.methods.setRandomWinnerNumber(_winnerCnt).send(options);
-    console.log('setUpDownLotteryTime...');
+    console.log('setLotteryTime...');
     const _gameStartTime = Number((Date.now() / 1000).toFixed(0));
-    await lotterySC.methods.setUpDownLotteryTime(_gameStartTime, _updownGameTime, _stopBetTime).send(options);
-    console.log('setRandomLotteryTime...');
-    await lotterySC.methods.setRandomLotteryTime(_randomGameTime).send(options);
+    await lotterySC.methods.setLotteryTime(_gameStartTime, _updownGameTime, _stopBetTime, _randomGameTime).send(options);
+    await sleep(10000);
     console.log('genRandom...');
     await lotterySC.methods.genRandom(0).send(options);
     await sleep(10000);

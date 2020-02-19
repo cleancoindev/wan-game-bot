@@ -105,12 +105,12 @@
         "type": "bool"
       },
       {
-        "name": "upStakers",
-        "type": "address"
+        "name": "upStakersIdx",
+        "type": "uint256"
       },
       {
-        "name": "downStakers",
-        "type": "address"
+        "name": "downStakersIdx",
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -228,12 +228,12 @@
         "type": "bool"
       },
       {
-        "name": "stakingTime",
-        "type": "address"
+        "name": "stakingTimeIdx",
+        "type": "uint256"
       },
       {
-        "name": "accStakeRange",
-        "type": "address"
+        "name": "accStakeRangeIdx",
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -509,29 +509,19 @@
         "type": "uint256"
       },
       {
-        "name": "_updownLtryTimeCycle",
+        "name": "_updownLottryTimeCycle",
         "type": "uint256"
       },
       {
         "name": "_stopTimeSpanInAdvance",
         "type": "uint256"
-      }
-    ],
-    "name": "setUpDownLotteryTime",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
+      },
       {
         "name": "_randomLotteryTimeCycle",
         "type": "uint256"
       }
     ],
-    "name": "setRandomLotteryTime",
+    "name": "setLotteryTime",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -571,7 +561,7 @@
         "type": "uint256"
       }
     ],
-    "name": "inputUpdownExtraPrize",
+    "name": "inputExtraPrize",
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",

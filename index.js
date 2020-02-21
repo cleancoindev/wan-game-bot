@@ -3,10 +3,10 @@ const lotteryAbi = require("./lottery.json");
 const axios = require('axios');
 const sleep = require('ko-sleep');
 
-const lotterySCAddr = '0x0411d36b9b54890c5d697f33d76b31a4f7e83d95';
-const _updownGameTime = 600;
-const _stopBetTime = 60;
-const _randomGameTime = _updownGameTime*2;
+const lotterySCAddr = '0x11d0fd8efacd0766cbd9b737f1b9f505034cd74c';
+const _updownGameTime = 28800;
+const _stopBetTime = 7200;
+const _randomGameTime = _updownGameTime*3;
 const _winnerCnt = 1;
 const rpcUrl = 'http://localhost:8888/';
 const owner = '0xbf12c73ccc1f7f670bf80d0bba93fe5765df9fec';

@@ -2,13 +2,19 @@ const Web3 = require('web3');
 const lotteryAbi = require("./lottery.json");
 const axios = require('axios');
 const sleep = require('ko-sleep');
+// Using the IPC provider in node.js
+var net = require('net');
+var web3 = new Web3('/home/ubuntu/.wanchain/testnet/gwan.ipc', net);
 
-const lotterySCAddr = '0x11d0fd8efacd0766cbd9b737f1b9f505034cd74c';
+// let web3 = new Web3();
+// const rpcUrl = 'http://localhost:8888/';
+// web3.setProvider(new Web3.providers.HttpProvider(rpcUrl));
+
+const lotterySCAddr = '0x73a99a82f1b95bfd55a5820a7342758ceca80b33';
 const _updownGameTime = 28800;
 const _stopBetTime = 7200;
 const _randomGameTime = _updownGameTime*3;
 const _winnerCnt = 1;
-const rpcUrl = 'http://localhost:8888/';
 const owner = '0xbf12c73ccc1f7f670bf80d0bba93fe5765df9fec';
 const _feeRatio = 100;//10%
 
@@ -20,8 +26,7 @@ var options = {
 }
 
 console.log('wan bet bot start:', lotterySCAddr);
-let web3 = new Web3();
-web3.setProvider(new Web3.providers.HttpProvider(rpcUrl));
+
 let lotterySC = new web3.eth.Contract(lotteryAbi, lotterySCAddr);
 
 

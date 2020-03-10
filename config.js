@@ -80,6 +80,7 @@ main = async () => {
     console.log('setLotteryTime...');
     const _gameStartTime = Number((Date.now() / 1000).toFixed(0));
     await lotterySC.methods.setLotteryTime(_gameStartTime, _updownGameTime, _stopBetTime, _randomGameTime).send(options);
+    console.log('setOperator...');
     await lotterySC.methods.setOperator(operator).send(options);
 
     await sleep(10000);

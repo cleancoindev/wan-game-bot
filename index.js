@@ -6,7 +6,7 @@ const sleep = require('ko-sleep');
 var net = require('net');
 var web3 = new Web3('/home/ubuntu/.wanchain/testnet/gwan.ipc', net);
 
-const lotterySCAddr = '0x5e1794cb827af141e5e7c801b019316efefe70dd';
+const lotterySCAddr = '0xe87db9727577eeebb1d28e5a4893c2b320a79770';
 const operator = '0xced44c4eb4c1910502d2b0759eb1e8013de543e3';
 
 var options = {

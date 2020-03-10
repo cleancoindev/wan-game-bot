@@ -7,10 +7,16 @@ var net = require('net');
 var web3 = new Web3('/home/ubuntu/.wanchain/testnet/gwan.ipc', net);
 
 const lotterySCAddr = '0x5e1794cb827af141e5e7c801b019316efefe70dd';
+const _updownGameTime = 28800;
+const _stopBetTime = 7200;
+const _randomGameTime = _updownGameTime*3;
+const _winnerCnt = 1;
+const owner = '0xbf12c73ccc1f7f670bf80d0bba93fe5765df9fec';
 const operator = '0xced44c4eb4c1910502d2b0759eb1e8013de543e3';
+const _feeRatio = 100;//10%
 
 var options = {
-  from: operator,
+  from: owner,
   to: lotterySCAddr,
   gasPrice: 180e9,
   gas: 10000000
@@ -65,48 +71,22 @@ main = async () => {
     'upAmount:', Number(roundInfo.upAmount) / 1e18, 'downAmount:', Number(roundInfo.downAmount) / 1e18);
   
   console.log('round time left:', Number(gameStartTime) + Number(updownTimeCycle) * (Number(round) + 1) - chainEndTime, 's.');
-  let leftTime = Number(gameStartTime) + Number(updownTimeCycle) * (Number(round) + 1) - chainEndTime;
   if (round == 0 && roundInfo.openPrice == 0 && gameStartTime == 0) {
-    console.log('Please first to setOperator.');
-    
-    await sleep(10000);
-  } else if (gameStartTime != 0 && roundInfo.openPrice == 0 && leftTime < updownTimeCycle && leftTime > 0) {
-    let curPrice = await getPrice();
-    console.log('setPriceIndex...', curPrice);
-    await lotterySC.methods.setPriceIndex(Number((curPrice * 1e8).toFixed(0)), 0, true).send(options);
-    console.log('init finish.');
-  } else if (gameStartTime != 0
-    && roundInfo.openPrice != 0
-    && roundInfo.closePrice == 0
-    && chainEndTime > Number(gameStartTime) + Number(updownTimeCycle) * (Number(round) + 1)) {
-    console.log('End time arrive.');
+    console.log('SC init.');
+    console.log('setFeeRatio...');
+    await lotterySC.methods.setFeeRatio(_feeRatio).send(options);
+    console.log('setRandomWinnerNumber...');
+    await lotterySC.methods.setRandomWinnerNumber(_winnerCnt).send(options);
+    console.log('setLotteryTime...');
+    const _gameStartTime = Number((Date.now() / 1000).toFixed(0));
+    await lotterySC.methods.setLotteryTime(_gameStartTime, _updownGameTime, _stopBetTime, _randomGameTime).send(options);
+    await lotterySC.methods.setOperator(operator).send(options);
 
-    let curPrice = await getPrice();
-    console.log('setPriceIndex...');
-    await lotterySC.methods.setPriceIndex(Number((curPrice * 1e8).toFixed(0)), Number(round), false).send(options);
     await sleep(10000);
-    console.log('upDownLotteryFanalize...');
-    await lotterySC.methods.upDownLotteryFanalize().send(options);
-    console.log('setPriceIndex...');
-    await lotterySC.methods.setPriceIndex(Number((curPrice * 1e8).toFixed(0)), Number(round) + 1, true).send(options);
+    console.log('genRandom...');
+    await lotterySC.methods.genRandom(0).send(options);
     await sleep(10000);
   } 
-  console.log('random end time:', (Number(gameStartTime) + Number(randomTimeCycle)*(Number(lotteryRound) + 1)));
-  if ((chainEndTime != 0) && (randomTimeCycle != 0) && (gameStartTime != 0) && (chainEndTime > (Number(gameStartTime) + Number(randomTimeCycle)*(Number(lotteryRound) + 1)))) {
-    let rd = await lotterySC.methods.randomGameMap(lotteryRound).call();
-    console.log('randomGameMap:', rd);
-    if (!rd.finished) {
-      console.log('genRandom...')
-      await lotterySC.methods.genRandom(lotteryRound).send(options);
-      await sleep(10000);
-      console.log('randomLotteryFanalize...')
-      await lotterySC.methods.randomLotteryFanalize().send(options);
-      await sleep(10000);
-    }
-  }
-
-  console.log('check ok!');
-  setTimeout(main, 5000, null);
 }
 
 getPrice = async () => {

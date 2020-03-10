@@ -6,15 +6,15 @@ const sleep = require('ko-sleep');
 var net = require('net');
 var web3 = new Web3('/home/ubuntu/.wanchain/testnet/gwan.ipc', net);
 
-const lotterySCAddr = '0xe60aa914807d6ce5c536862750cc6d8ba581edc5';
-const _updownGameTime = 28800;
-const _stopBetTime = 7200;
-const _randomGameTime = _updownGameTime*3;
+const lotterySCAddr = '0xa4d6c4835ea5e2259cb525413f837dd17788e7c8';
+const _updownGameTime = 600;
+const _stopBetTime = 120;
+const _randomGameTime = _updownGameTime*2;
 const _winnerCnt = 2;
 const owner = '0xbf12c73ccc1f7f670bf80d0bba93fe5765df9fec';
 const operator = '0xced44c4eb4c1910502d2b0759eb1e8013de543e3';
 const _feeRatio = 100;//10%
-const _allStartTime = 1583841600;
+const _allStartTime = Date.now()/1000;
 
 var options = {
   from: owner,

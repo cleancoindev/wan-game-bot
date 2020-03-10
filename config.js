@@ -87,6 +87,8 @@ main = async () => {
     console.log('genRandom...');
     await lotterySC.methods.genRandom(0).send(options);
     await sleep(10000);
+
+    console.log('SC init finish.');
   } 
 }
 

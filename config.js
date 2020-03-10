@@ -6,14 +6,15 @@ const sleep = require('ko-sleep');
 var net = require('net');
 var web3 = new Web3('/home/ubuntu/.wanchain/testnet/gwan.ipc', net);
 
-const lotterySCAddr = '0x5e1794cb827af141e5e7c801b019316efefe70dd';
+const lotterySCAddr = '0xe87db9727577eeebb1d28e5a4893c2b320a79770';
 const _updownGameTime = 28800;
 const _stopBetTime = 7200;
 const _randomGameTime = _updownGameTime*3;
-const _winnerCnt = 1;
+const _winnerCnt = 2;
 const owner = '0xbf12c73ccc1f7f670bf80d0bba93fe5765df9fec';
 const operator = '0xced44c4eb4c1910502d2b0759eb1e8013de543e3';
 const _feeRatio = 100;//10%
+const _allStartTime = 1583841600;
 
 var options = {
   from: owner,
@@ -78,7 +79,7 @@ main = async () => {
     console.log('setRandomWinnerNumber...');
     await lotterySC.methods.setRandomWinnerNumber(_winnerCnt).send(options);
     console.log('setLotteryTime...');
-    const _gameStartTime = Number((Date.now() / 1000).toFixed(0));
+    const _gameStartTime = _allStartTime;
     await lotterySC.methods.setLotteryTime(_gameStartTime, _updownGameTime, _stopBetTime, _randomGameTime).send(options);
     console.log('setOperator...');
     await lotterySC.methods.setOperator(operator).send(options);

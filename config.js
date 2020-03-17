@@ -14,7 +14,7 @@ const _winnerCnt = 2;
 const owner = '0xbf12c73ccc1f7f670bf80d0bba93fe5765df9fec';
 const operator = '0xced44c4eb4c1910502d2b0759eb1e8013de543e3';
 const _feeRatio = 100;//10%
-const _allStartTime = 1583841600;
+const _allStartTime = 1584446400;
 
 var options = {
   from: owner,

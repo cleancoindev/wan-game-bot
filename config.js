@@ -6,7 +6,7 @@ const sleep = require('ko-sleep');
 var net = require('net');
 var web3 = new Web3('/home/ubuntu/.wanchain/testnet/gwan.ipc', net);
 
-const lotterySCAddr = '0xe60aa914807d6ce5c536862750cc6d8ba581edc5';
+const lotterySCAddr = '0x8c230edab856fd900c929393b76a511a3e0dbd52';
 const _updownGameTime = 28800;
 const _stopBetTime = 7200;
 const _randomGameTime = _updownGameTime*3;

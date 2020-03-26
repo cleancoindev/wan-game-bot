@@ -4,9 +4,9 @@ const axios = require('axios');
 const sleep = require('ko-sleep');
 // Using the IPC provider in node.js
 var net = require('net');
-var web3 = new Web3('/home/ubuntu/.wanchain/testnet/gwan.ipc', net);
+var web3 = new Web3('/home/ubuntu/.wanchain/gwan.ipc', net);
 
-const lotterySCAddr = '0xaa5066c92f53472d52a09f8f7b3860912a330126';
+const lotterySCAddr = '0xdfad0145311acb8f0e0305aceef5d11a05df9aa0';
 const operator = '0xced44c4eb4c1910502d2b0759eb1e8013de543e3';
 
 var options = {

@@ -12,7 +12,7 @@ const operator = '0xced44c4eb4c1910502d2b0759eb1e8013de543e3';
 var options = {
   from: operator,
   to: lotterySCAddr,
-  gasPrice: 180e9,
+  gasPrice: 1e9,
   gas: 10000000
 }
 

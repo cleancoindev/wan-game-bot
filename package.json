@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.26.1",
     "ko-sleep": "^1.0.3",
     "web3": "^1.2.6"
   }
